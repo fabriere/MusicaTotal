@@ -47,3 +47,8 @@ sentry.properties
 /desktopApp/generated.conveyor.conf
 # Conveyor output directory
 /output/
+
+# Firma de Música Total: NUNCA al repositorio
+signing/
+*.jks
+*.keystore

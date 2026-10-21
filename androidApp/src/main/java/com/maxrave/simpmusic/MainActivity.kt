@@ -42,6 +42,7 @@ import com.maxrave.simpmusic.service.test.notification.NotifyWork
 import com.maxrave.simpmusic.utils.ComposeResUtils
 import com.maxrave.simpmusic.utils.VersionManager
 import com.maxrave.simpmusic.viewModel.SharedViewModel
+import ec.musicatotal.license.MusicaTotalLicenseGate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.android.ext.android.inject
@@ -115,7 +116,8 @@ class MainActivity : AppCompatActivity() {
         unloadKoinModules(viewModelModule)
         loadKoinModules(viewModelModule)
         VersionManager.initialize()
-        checkForUpdate()
+        // Sin comprobación de actualizaciones: este APK se actualiza desde
+        // nuestro propio backend, no desde el repositorio de SimpMusic.
         if (viewModel.recreateActivity.value || viewModel.isServiceRunning) {
             viewModel.activityRecreateDone()
         } else {
@@ -137,23 +139,23 @@ class MainActivity : AppCompatActivity() {
         // Check if the migration has already been done or not
         if (getString(FIRST_TIME_MIGRATION) != STATUS_DONE) {
             Logger.d("Locale Key", "onCreate: ${Locale.getDefault().toLanguageTag()}")
-            if (SUPPORTED_LANGUAGE.codes.contains(Locale.getDefault().toLanguageTag())) {
-                Logger.d(
-                    "Contains",
-                    "onCreate: ${
-                        SUPPORTED_LANGUAGE.codes.contains(
-                            Locale.getDefault().toLanguageTag(),
-                        )
-                    }",
-                )
-                putString(SELECTED_LANGUAGE, Locale.getDefault().toLanguageTag())
-                if (SUPPORTED_LOCATION.items.contains(Locale.getDefault().country)) {
-                    putString("location", Locale.getDefault().country)
-                } else {
-                    putString("location", "US")
-                }
+            // El teléfono puede traer "es-EC", "es-MX", etc. y la lista de
+            // idiomas sólo tiene "es-ES". Antes eso caía a inglés: ahora se
+            // busca por idioma y, si no hay, se queda en español para la
+            // región de venta.
+            val systemTag = Locale.getDefault().toLanguageTag()
+            val systemLanguage = Locale.getDefault().language
+            val match =
+                SUPPORTED_LANGUAGE.codes.firstOrNull { it.equals(systemTag, ignoreCase = true) }
+                    ?: SUPPORTED_LANGUAGE.codes.firstOrNull {
+                        it.substringBefore('-').equals(systemLanguage, ignoreCase = true)
+                    }
+                    ?: if (systemLanguage.equals("es", ignoreCase = true)) "es-ES" else "en-US"
+            putString(SELECTED_LANGUAGE, match)
+            if (SUPPORTED_LOCATION.items.contains(Locale.getDefault().country)) {
+                putString("location", Locale.getDefault().country)
             } else {
-                putString(SELECTED_LANGUAGE, "en-US")
+                putString("location", "EC")
             }
             // Fetch the selected language from wherever it was stored. In this case its SharedPref
             getString(SELECTED_LANGUAGE)?.let {
@@ -252,9 +254,13 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.getLocation()
 
-        if (!BuildConfig.DEBUG) viewModel.checkOfficialBuild(packageName, signingCertSha256())
+        // Se quitó la comprobación de "compilación oficial": este APK lo
+        // firmamos nosotros, así que esa comprobación dejaría la app en una
+        // pantalla que no lleva a ninguna parte.
         setContent {
-            App(viewModel)
+            MusicaTotalLicenseGate {
+                App(viewModel)
+            }
         }
     }
 
