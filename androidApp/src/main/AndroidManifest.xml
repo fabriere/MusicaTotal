@@ -23,6 +23,8 @@
          Android 17 (API 37) and up, where it is a runtime permission; LoginSync.android.kt asks
          for it then. Declared now so a targetSdk bump cannot make the connection silently time out. -->
     <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
+    <!-- Actualizador propio: instala el APK que baja de nuestro repositorio. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <uses-feature
         android:name="android.hardware.type.automotive"

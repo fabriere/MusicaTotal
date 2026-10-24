@@ -100,6 +100,9 @@ kotlin {
                 implementation(projects.castEmpty)
             }
 
+            // Actualizador: comprueba el release en GitHub por HTTPS.
+            implementation(libs.okhttp3.okhttp)
+
             // Login sync QR scanner: CameraX + ZXing, not ML Kit, which F-Droid rejects as proprietary
             implementation(libs.camera.camera2)
             implementation(libs.camera.lifecycle)

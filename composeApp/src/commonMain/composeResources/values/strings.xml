@@ -996,4 +996,15 @@
     <string name="log_stack_trace_lines">Stack trace · %1$s lines</string>
     <string name="log_hide_stack_trace">Hide stack trace</string>
     <string name="log_export_failed">Could not export the log</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_up_to_date">You have the latest version (%1$s)</string>
+    <string name="update_new_version_title">A new version is available</string>
+    <string name="update_new_version_message">Version %1$s · %2$s</string>
+    <string name="update_download_and_install">Download and install</string>
+    <string name="update_later">Not now</string>
+    <string name="update_downloading">Downloading… %1$s</string>
+    <string name="update_error_check">Could not check for updates. Try again later.</string>
+    <string name="update_permission_needed">Allow installing apps from Música Total, then tap again</string>
+    <string name="update_install_ready">Version %1$s is ready — tap to install</string>
+    <string name="update_installed_version">Installed: %1$s</string>
 </resources>
