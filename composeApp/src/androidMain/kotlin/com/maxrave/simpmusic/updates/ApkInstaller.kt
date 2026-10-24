@@ -177,6 +177,13 @@ object ApkInstaller {
             return false
         }
 
+        // 1) Sesión de PackageInstaller: es la vía que Android espera para que
+        //    una app se actualice a sí misma. En Honor/Huawei el Intent clásico
+        //    acaba en el instalador del App Market y su verificador lo rechaza
+        //    (INSTALL_FAILED_VERIFICATION_FAILURE, -22).
+        if (ApkSessionInstaller.install(context, file)) return true
+
+        // 2) Si la sesión no se pudo abrir, se intenta el Intent de siempre.
         val uri =
             try {
                 FileProvider.getUriForFile(context, "${context.packageName}.FileProvider", file)
